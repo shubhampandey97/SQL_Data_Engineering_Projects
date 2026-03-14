@@ -15,7 +15,7 @@ CREATE TABLE company_dim (
 -- Create skills_dim table
 CREATE TABLE skills_dim (
     skill_id INTEGER PRIMARY KEY,
-    skill VARCHAR,
+    skills VARCHAR,
     type VARCHAR
 );
 
@@ -53,3 +53,15 @@ CREATE TABLE skills_job_dim (
 SELECT table_name
 FROM information_schema.tables
 WHERE table_schema = 'main';
+
+/*
+┌───────────────────┐
+│    table_name     │
+│      varchar      │
+├───────────────────┤
+│ company_dim       │
+│ job_postings_fact │
+│ skills_dim        │
+│ skills_job_dim    │
+└───────────────────┘
+*/
