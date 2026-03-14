@@ -1,4 +1,5 @@
 -- Step 2: DW - Load data from CSV files into star schema tables (Data Warehouse)
+-- duckdb dw_marts.duckdb -c ".read build_dw_marts.sql"
 
 SELECT '=== lOADING company_dim Table ===' AS info;
 
@@ -81,4 +82,108 @@ FROM read_csv('https://storage.googleapis.com/sql_de/skills_job_dim.csv',
 │ === lOADING skills_job_dim Table === │
 └──────────────────────────────────────┘
 100% ?██████████████████████████████████████? (00:00:28.62 elapsed)
+*/
+
+
+-- Verify data was loaded correctly
+SELECT 'Company Dimension' AS table_name, COUNT(*) as record_count FROM company_dim
+UNION ALL
+SELECT 'Skills Dimension', COUNT(*) FROM skills_dim
+UNION ALL
+SELECT 'Job Postings Fact', COUNT(*) FROM job_postings_fact
+UNION ALL
+SELECT 'Skills Job Bridge', COUNT(*) FROM skills_job_dim;
+
+/*
+┌───────────────────┬──────────────┐
+│    table_name     │ record_count │
+│      varchar      │    int64     │
+├───────────────────┼──────────────┤
+│ Company Dimension │       215940 │
+│ Skills Dimension  │          262 │
+│ Job Postings Fact │      1615930 │
+│ Skills Job Bridge │      7193426 │
+└───────────────────┴──────────────┘
+*/
+
+
+-- Show sample data
+SELECT '=== Company Dimension Sample ===' AS info;
+SELECT * FROM company_dim LIMIT 5;
+
+SELECT '=== Skills Dimension Sample ===' AS info;
+SELECT * FROM skills_dim LIMIT 5;
+
+SELECT '=== Job Postings Fact Sample ===' AS info;
+SELECT * FROM job_postings_fact LIMIT 5;
+
+SELECT '=== Skills Job Bridge Sample ===' AS info;
+SELECT * FROM skills_job_dim LIMIT 5;
+/*
+┌──────────────────────────────────┐
+│               info               │
+│             varchar              │
+├──────────────────────────────────┤
+│ === Company Dimension Sample === │
+└──────────────────────────────────┘
+┌────────────┬────────────────────────┐
+│ company_id │          name          │
+│   int32    │        varchar         │
+├────────────┼────────────────────────┤
+│       4593 │ Metasys Technologies   │
+│       4594 │ Guidehouse             │
+│       4595 │ Protask                │
+│       4596 │ Atria Wealth Solutions │
+│       4597 │ ICONMA, LLC            │
+└────────────┴────────────────────────┘
+┌─────────────────────────────────┐
+│              info               │
+│             varchar             │
+├─────────────────────────────────┤
+│ === Skills Dimension Sample === │
+└─────────────────────────────────┘
+┌──────────┬─────────┬─────────────┐
+│ skill_id │ skills  │    type     │
+│  int32   │ varchar │   varchar   │
+├──────────┼─────────┼─────────────┤
+│        0 │ sql     │ programming │
+│        1 │ python  │ programming │
+│        2 │ r       │ programming │
+│        3 │ go      │ programming │
+│        4 │ matlab  │ programming │
+└──────────┴─────────┴─────────────┘
+┌──────────────────────────────────┐
+│               info               │
+│             varchar              │
+├──────────────────────────────────┤
+│ === Job Postings Fact Sample === │
+└──────────────────────────────────┘
+┌────────┬────────────┬───┬─────────────────┬─────────────────┐
+│ job_id │ company_id │ . │ salary_year_avg │ salary_hour_avg │
+│ int32  │   int32    │   │     double      │     double      │
+├────────┼────────────┼───┼─────────────────┼─────────────────┤
+│   4593 │       4593 │ . │            NULL │            NULL │
+│   4594 │       4594 │ . │            NULL │            NULL │
+│   4595 │       4595 │ . │            NULL │            NULL │
+│   4596 │       4596 │ . │            NULL │            NULL │
+│   4597 │       4597 │ . │            NULL │            NULL │
+├────────┴────────────┴───┴─────────────────┴─────────────────┤
+│ 5 rows                                 16 columns (4 shown) │
+└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────┐
+│               info               │
+│             varchar              │
+├──────────────────────────────────┤
+│ === Skills Job Bridge Sample === │
+└──────────────────────────────────┘
+┌──────────┬────────┐
+│ skill_id │ job_id │
+│  int32   │ int32  │
+├──────────┼────────┤
+│        0 │   4593 │
+│        0 │   4594 │
+│        1 │   4594 │
+│        2 │   4594 │
+│        0 │   4595 │
+└──────────┴────────┘
 */
